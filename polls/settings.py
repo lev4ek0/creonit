@@ -9,8 +9,11 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
+import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +23,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-#upxrl8@l(%df375lqs8*hl4p%y1ix0taf4oak=k*mk%$exi_('
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,6 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'corsheaders',
+    'authentication',
 ]
 
 MIDDLEWARE = [
@@ -49,6 +55,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 ROOT_URLCONF = 'polls.urls'
 
 TEMPLATES = [
@@ -75,8 +83,12 @@ WSGI_APPLICATION = 'polls.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ.get('DATABASE_URL').split('/')[-1],
+        'USER': os.environ.get('DATABASE_URL').split('postgres://')[1].split(':')[0],
+        'PASSWORD': os.environ.get('DATABASE_URL').split(':')[2].split('@')[0],
+        'HOST': os.environ.get('DATABASE_URL').split('@')[1].split(':')[0],
+        'PORT': os.environ.get('DATABASE_URL').split(':')[-1].split('/')[0],
     }
 }
 
